@@ -5,7 +5,7 @@
             <h3  style="margin: 0; color: white;">Welcome to CPSU Grad School App</h3>
         </div>
         <div style="padding: 20px;">
-            <p style="margin-top: 0;">Hello {{$data['user_name']}}, You are now successfully registered. Here is your temporary password:</p>
+            <p style="margin-top: 0;">Hello {{$data['user_name']}}, you are now successfully registered. Here is your temporary password:</p>
             <div style="padding: 15px; font-size: 18pt; background-color: lightgray; width: auto; display: inline-block; border-radius: 3px;">
                 {{ $data['password'] }}
             </div>
