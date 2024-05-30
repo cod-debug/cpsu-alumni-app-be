@@ -164,10 +164,18 @@ class AlumniController extends Controller
 
             // select specific user
             if($request->type == 'email'){
-                $user = User::where('email', $request->email)->first();
+                $user = User::where('email', $request->email)->where('type', 'alumni')->first();
             } else {
-                $user = User::where('contact_number', $request->contact_number)->first();
+                $user = User::where('contact_number', $request->contact_number)->where('type', 'alumni')->first();
             }
+
+            if(is_null($user)){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Email & Password does not match with our record.',
+                ], 401);
+            }
+            
             // remove existing tokens to invalidate other logins
             $user->tokens()->delete();
             
