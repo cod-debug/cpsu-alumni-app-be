@@ -76,3 +76,11 @@ Route::group([
 ], function(){
 	Route::post('login', 'AuthController@login');
 });
+
+Route::group([
+	'prefix' => 'alumni',
+	'as' => 'api.alumni_auth.',
+	'namespace' => 'App\Http\Controllers\Api'
+], function(){
+	Route::post('login', 'AlumniController@login');
+});

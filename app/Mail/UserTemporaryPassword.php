@@ -18,9 +18,11 @@ class UserTemporaryPassword extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public $data;
+    public function __construct($data)
     {
         //
+        $this->data = $data;
     }
 
     /**
@@ -44,6 +46,9 @@ class UserTemporaryPassword extends Mailable
     {
         return new Content(
             view: 'emails.user-temp-password',
+            with: [
+                'data' => $this->data
+            ]
         );
     }
 

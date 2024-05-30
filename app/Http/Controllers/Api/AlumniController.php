@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class AlumniController extends Controller
 {
@@ -132,6 +133,63 @@ class AlumniController extends Controller
         }  catch (\Throwable $th) {
             // something went wrong server error
             return $this->serverError($th);
+        }
+    }
+
+    public function login(Request $request){
+        try {
+            // validate user input
+            $validateUser = Validator::make($request->all(), 
+            [
+                'email' => 'email',
+                'contact_number' => '',
+                'password' => 'required',
+                'type' => 'required',
+            ]);
+
+            // check if validation fails
+            if($validateUser->fails()){
+                // return 401 unauthorized
+                return $this->badRequest($validateUser->errors());
+            }
+
+            // check if email and password exists
+            if(!Auth::attempt($request->only(['email', 'password'])) && !Auth::attempt($request->only(['contact_number', 'password']))){
+                // if not return 401 - email and password invalid
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Email & Password does not match with our record.',
+                ], 401);
+            }
+
+            // select specific user
+            if($request->type == 'email'){
+                $user = User::where('email', $request->email)->first();
+            } else {
+                $user = User::where('contact_number', $request->contact_number)->first();
+            }
+            // remove existing tokens to invalidate other logins
+            $user->tokens()->delete();
+            
+            // response with token
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User Logged In Successfully',
+                'data' => [
+                    "user_id" => $user->id,
+                    "first_name" => $user->first_name,
+                    "middle_name" => $user->middle_name,
+                    "last_name" => $user->last_name,
+                    "type" => $user->type,
+                ],
+                'token' => $user->createToken("API TOKEN")->plainTextToken
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
         }
     }
 }

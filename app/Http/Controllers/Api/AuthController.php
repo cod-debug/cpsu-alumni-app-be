@@ -8,13 +8,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Services\AuthService;
+use App\Mail\UserTemporaryPassword;
+use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
     //
-    public function register(Request $request){
+    public function register(Request $request, AuthService $auth_service){
         
         try {
             $validateUser = Validator::make($request->all(),
@@ -41,11 +44,12 @@ class AuthController extends Controller
                 return $this->badRequest($validateUser->errors());
             }
 
+            $random_password = $auth_service->generateRandomString(8);
             $added_request = [
-                'password' => Hash::make('Test123!'),
+                'password' => Hash::make($random_password),
                 'username' => $request->input('username') ?? $request->input('email')
             ];
-
+            
             if($request->hasFile('avatar')){
                 $file = $request->file('avatar');
                 
@@ -60,6 +64,11 @@ class AuthController extends Controller
                 ...$added_request 
             ]);
             
+            $data = [
+                'user_name' => $user->first_name,
+                'password' => $random_password
+            ];
+            Mail::to($user->email)->send(new UserTemporaryPassword($data));
             // return success
             return response()->json([
                 'status' => true,
