@@ -83,4 +83,5 @@ Route::group([
 	'namespace' => 'App\Http\Controllers\Api'
 ], function(){
 	Route::post('login', 'AlumniController@login');
+	Route::post('change-password-password', 'AlumniController@requiredChangePassword');
 });

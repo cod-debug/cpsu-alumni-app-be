@@ -38,6 +38,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('status')->default('active');
             $table->string('type')->default('alumni');
+            $table->boolean('require_change_password')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });

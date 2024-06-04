@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AlumniController extends Controller
 {
@@ -189,10 +190,52 @@ class AlumniController extends Controller
                     "middle_name" => $user->middle_name,
                     "last_name" => $user->last_name,
                     "type" => $user->type,
+                    "require_change_password" => $user->require_change_password,
                 ],
                 'token' => $user->createToken("API TOKEN")->plainTextToken
             ], 200);
 
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+    
+    public function requiredChangePassword(Request $request){
+        try {
+            // validate request
+            $validateUser = Validator::make($request->all(), 
+            [
+                'user_id' => 'required|numeric',
+                'password' => 'required',
+            ]);
+
+            // check if validation fails
+            if($validateUser->fails()){
+                // return 401 unauthorized
+                return $this->badRequest($validateUser->errors());
+            }
+            
+            $user = User::find($request->user_id);
+            if(!$user->require_change_password){
+                return response()->json([
+                    'status' => false,
+                    'message' => "User already changed password"
+                ], 400);
+
+            }
+
+            $user->update([
+                'password' => Hash::make($request->password),
+                'require_change_password' => false
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => "Successfully updated password."
+            ], 200);
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
