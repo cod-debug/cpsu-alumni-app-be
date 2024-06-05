@@ -130,7 +130,7 @@ class MessageController extends Controller
         ->orderBy('last_message.last_message_timestamp', 'desc')
         ->paginate($request->query('limit'));
         
-        $messages->getCollection()->transform(function ($user) {
+        $messages->getCollection()->transform(function ($user) use ($request) {
             $avatar_url = null;
 
              // Assuming avatar path is relative to the storage directory
@@ -149,18 +149,21 @@ class MessageController extends Controller
                 }
             }
 
+            $last_message = null;
+
+            if($user->getLastMessage() && in_array($request->user_from, [$user->getLastMessage()->user_from, $user->getLastMessage()->user_to])){
+                $last_message = $user->getLastMessage();
+            }
+
             return [
                 'user_id' => $user->id,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
                 'middle_name' => $user->middle_name,
-                'received_messages' => $user->received_messages,
-                'sent_messages' => $user->sent_messages,
-                'last_message' => $user->getLastMessage(),
+                'last_message' => $last_message,
                 'avatar_url' => $avatar_url
             ];
         });
-
         return response()->json($messages);
     }
 
