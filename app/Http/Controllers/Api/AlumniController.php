@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Services\AuthService;
+
+use App\Mail\UserForgotPassword;
+use Illuminate\Support\Facades\Mail;
 
 class AlumniController extends Controller
 {
@@ -242,5 +246,53 @@ class AlumniController extends Controller
                 'message' => $th->getMessage()
             ], 500);
         }
+    }
+
+    public function forgotPassword(Request $request, AuthService $auth_service){
+        try {
+            $validateUser = Validator::make($request->all(),
+            [
+                'email' => 'required|email',
+            ]);
+
+            // check if validation fails
+            if($validateUser->fails()){
+                // return 401 unauthorized
+                return $this->badRequest($validateUser->errors());
+            }
+            $message = 'If email exists on our system you will receive a temporary password.';
+
+            $user = User::where('email', $request->email)->first();
+
+            if($user === null){
+                return response()->json([
+                    'status' => true,
+                    'message' => $message,
+                ], 200);
+            }
+            $random_password = $auth_service->generateRandomString(8);
+            $data = [
+                'user_name' => $user->first_name,
+                'password' => $random_password
+            ];
+
+            // update user password
+            $user->update([
+                'password' => Hash::make($random_password),
+                'require_change_password' => true,
+            ]);
+
+            // send email with new password
+            Mail::to($user->email)->send(new UserForgotPassword($data));
+
+            return response()->json([
+                'status' => true,
+                'message' => $message,
+            ], 200);
+        } catch (\Throwable $th) {
+            // something went wrong server error
+            return $this->serverError($th);
+        }
+
     }
 }

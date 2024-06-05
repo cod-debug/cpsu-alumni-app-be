@@ -45,7 +45,7 @@ class UserForgotPassword extends Mailable
     public function content()
     {
         return new Content(
-            view: 'emails.user-temp-password',
+            view: 'emails.user-forgot-password',
             with: [
                 'data' => $this->data
             ]

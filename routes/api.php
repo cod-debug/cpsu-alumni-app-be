@@ -84,4 +84,5 @@ Route::group([
 ], function(){
 	Route::post('login', 'AlumniController@login');
 	Route::post('change-password-password', 'AlumniController@requiredChangePassword');
+	Route::post('forgot-password', 'AlumniController@forgotPassword');
 });
