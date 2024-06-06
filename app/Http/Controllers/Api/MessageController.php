@@ -92,6 +92,7 @@ class MessageController extends Controller
     }
 
     public function getAllMessages(Request $request){
+       // Fetch users with their last message timestamp
         $messages = User::select(
             'users.id',
             'users.first_name',
@@ -99,24 +100,10 @@ class MessageController extends Controller
             'users.middle_name',
             'users.avatar',
             'users.type',
-            'last_message.last_message_timestamp'
+            \DB::raw('COALESCE(MAX(received.created_at), MAX(sent.created_at)) as last_message_timestamp')
         )
         ->leftJoin('messages as received', 'users.id', '=', 'received.user_to')
         ->leftJoin('messages as sent', 'users.id', '=', 'sent.user_from')
-        ->leftJoin(\DB::raw('(SELECT
-                CASE
-                    WHEN MAX(received.created_at) IS NOT NULL THEN MAX(received.created_at)
-                    ELSE MAX(sent.created_at)
-                END as last_message_timestamp,
-                COALESCE(received.user_to, sent.user_from) as user_id
-            FROM
-                messages as received
-            LEFT JOIN
-                messages as sent ON received.user_to = sent.user_from
-            GROUP BY
-                COALESCE(received.user_to, sent.user_from)) as last_message'), function($join) {
-                $join->on('users.id', '=', 'last_message.user_id');
-        })
         ->where('users.id', '!=', $request->query('user_from'))
         ->groupBy(
             'users.id',
@@ -124,34 +111,19 @@ class MessageController extends Controller
             'users.last_name',
             'users.middle_name',
             'users.avatar',
-            'users.type',
-            'last_message.last_message_timestamp'
+            'users.type'
         )
-        ->orderBy('last_message.last_message_timestamp', 'desc')
+        ->orderBy('last_message_timestamp', 'desc')
         ->paginate($request->query('limit'));
-        
+
+        // Transform user collection
         $messages->getCollection()->transform(function ($user) use ($request) {
-            $avatar_url = null;
+            // Generate avatar URL
+            $avatar_url = $user->avatar ? asset($user->type === 'admin' ? 'avatars/admin/' . $user->avatar : 'avatars/' . $user->avatar) : null;
 
-             // Assuming avatar path is relative to the storage directory
-            $filePath = 'avatars/' . $user->avatar;
-            if($user->type === 'admin'){
-                $filePath = 'avatars/admin/' . $user->avatar;
-            }
-
-            if($user->avatar){
-
-                if (Storage::disk('local')->exists($filePath)) {
-                    $avatar_url = Storage::disk('local')->url($filePath);
-                } else {
-                    // Provide a default avatar URL if the avatar doesn't exist
-                    $avatar_url = asset('default_avatar_url.jpg');
-                }
-            }
-
+            // Get last message if exists
             $last_message = null;
-
-            if($user->getLastMessage() && in_array($request->user_from, [$user->getLastMessage()->user_from, $user->getLastMessage()->user_to])){
+            if ($user->getLastMessage() && in_array($request->user_from, [$user->getLastMessage()->user_from, $user->getLastMessage()->user_to])) {
                 $last_message = $user->getLastMessage();
             }
 
@@ -164,6 +136,7 @@ class MessageController extends Controller
                 'avatar_url' => $avatar_url
             ];
         });
+
         return response()->json($messages);
     }
 
