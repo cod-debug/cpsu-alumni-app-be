@@ -10,6 +10,7 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    
     public function badRequest($validateDataErrors){
         return response()->json([
             'status_code' => 400,

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -14,7 +13,7 @@ class AdminController extends Controller
     //
     public function register(Request $request){
         try {
-            $validateUser = Validator::make($request->all(), 
+            $validateUser = Validator::make($request->all(),
             [
                 'first_name' => 'required',
                 'last_name' => 'required',

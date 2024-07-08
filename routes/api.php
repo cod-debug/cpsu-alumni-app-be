@@ -86,3 +86,15 @@ Route::group([
 	Route::post('change-password-password', 'AlumniController@requiredChangePassword');
 	Route::post('forgot-password', 'AlumniController@forgotPassword');
 });
+
+Route::group([
+	'prefix' => 'nature_of_work',
+	'as' => 'api.nature_of_work.',
+	'namespace' => 'App\Http\Controllers\Api'
+], function(){
+	Route::post('create', 'NatureOfWorkController@add');
+    Route::put('update/{id}','NatureOfWorkController@update');
+    Route::delete('update/{id}','NatureOfWorkController@delete');
+    Route::get('get-paginated','NatureOfWorkController@getPaginated');
+    Route::get('get-one','NatureOfWorkController@getOne');
+});
