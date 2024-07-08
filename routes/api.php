@@ -109,5 +109,5 @@ Route::group([
     Route::put('update/{id}','JobPostingController@update');
     Route::delete('update/{id}','JobPostingController@delete');
     Route::get('get-paginated','JobPostingController@getPaginated');
-    Route::get('get-one','JobPostingController@getOne');
+    Route::get('get-one/{id}','JobPostingController@getOne');
 });

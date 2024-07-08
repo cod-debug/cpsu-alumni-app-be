@@ -46,10 +46,16 @@ class JobPostingController extends Controller
             $size = $request->query("limit") ?? 10;
             $keyword = $request->query("search");
             $status = $request->query("status") ?? 'all';
+            $nature_of_work = $request->query('nature_of_work');
             
             $jobs = JobPostingModel::where(function($query) use ($status){
                 if($status != 'all'){
                     return $query->where('status', '=', $status);
+                }
+            })
+            ->where(function($query) use ($nature_of_work){
+                if($nature_of_work != null){
+                    return $query->where('nature_of_work_id', '=', $nature_of_work);
                 }
             })
             ->where(function($query) use ($keyword){
@@ -66,6 +72,17 @@ class JobPostingController extends Controller
             ], 200);
         } catch (\Throwable $th) {
             // something went wrong server error
+            return $this->serverError($th);
+        }
+    }
+    
+    public function getOne($id){
+        try {
+            return response()->json([
+                'status' => true,
+                'data' => JobPostingModel::find($id),
+            ], 200);
+        } catch (\Throwable $th) {
             return $this->serverError($th);
         }
     }
