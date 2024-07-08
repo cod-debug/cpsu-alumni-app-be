@@ -97,4 +97,17 @@ Route::group([
     Route::delete('update/{id}','NatureOfWorkController@delete');
     Route::get('get-paginated','NatureOfWorkController@getPaginated');
     Route::get('get-one','NatureOfWorkController@getOne');
+    Route::get('get-all','NatureOfWorkController@getAll');
+});
+
+Route::group([
+	'prefix' => 'job_posting',
+	'as' => 'api.job_posting.',
+	'namespace' => 'App\Http\Controllers\Api'
+], function(){
+	Route::post('create', 'JobPostingController@add');
+    Route::put('update/{id}','JobPostingController@update');
+    Route::delete('update/{id}','JobPostingController@delete');
+    Route::get('get-paginated','JobPostingController@getPaginated');
+    Route::get('get-one','JobPostingController@getOne');
 });

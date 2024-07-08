@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->string('shift')->nullable();
             $table->string('status')->nullable();
-            $table->double('salary')->nullable();
+            $table->string('salary')->nullable();
             $table->string('salary_type')->nullable();
             $table->bigInteger('added_by')->unsigned()->nullable();
             $table->timestamps();

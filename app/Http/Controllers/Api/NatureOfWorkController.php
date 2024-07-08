@@ -104,6 +104,22 @@ class NatureOfWorkController extends Controller
         }
     }
 
+    public function getAll(){
+        
+        try {
+            $naturesOfWork = NatureOfWorkModel::where('status', '=', 'active')->orderBy('nature_of_work')->get();
+
+            return response()->json([
+                'status' => true,
+                'data' => $naturesOfWork
+            ], 200);
+
+        } catch (\Throwable $th) {
+            // something went wrong server error
+            return $this->serverError($th);
+        }
+    }
+
     public function delete($id){
         try {
             NatureOfWorkModel::find($id)->delete();

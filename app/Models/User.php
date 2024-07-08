@@ -105,4 +105,8 @@ class User extends Authenticatable
 
         return null; // No messages found
     }
+
+    public function posted_jobs(){
+        return $this->hasMany(JobPostingModel::class, 'added_by', 'id');
+    }
 }
