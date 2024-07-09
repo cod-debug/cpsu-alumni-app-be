@@ -15,11 +15,11 @@ return [
     |
     */
 
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
+    'paths' => ['api/*'],
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://*.cpsualumniapp.online'],
+    'allowed_origins' => ['https://*.cpsualumniapp.online', 'https://cpsualumniapp.online'],
 
     'allowed_origins_patterns' => [],
 
