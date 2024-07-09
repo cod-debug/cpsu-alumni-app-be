@@ -86,4 +86,49 @@ class JobPostingController extends Controller
             return $this->serverError($th);
         }
     }
+
+    public function delete($id){
+        try {
+            JobPostingModel::find($id)->delete();
+            return response()->json([
+                'status' => true,
+                'message' => 'Successfully deleted job posting',
+            ], 200);
+        } catch (\Throwable $th) {
+            // something went wrong server error
+            return $this->serverError($th);
+        }
+    }
+
+    public function update(Request $request, $id){
+        try{
+            // validate request
+            $validateRequest = Validator::make($request->all(),
+            [
+                'company_name' => 'required',
+                'title' => 'required',
+                'description' => 'required',
+                'nature_of_work_id' => 'required',
+            ]);
+
+            // if validation fails
+            if($validateRequest->fails()){
+                // return bad request
+                return $this->badRequest($validateRequest->errors());
+            }
+
+            // update message
+            JobPostingModel::find($id)->update($request->all());
+            
+            // return success
+            return response()->json([
+                'status' => true,
+                'message' => 'Successfully updated job posting',
+            ], 200);
+
+        } catch (\Throwable $th) {
+            // something went wrong, server error basically somethings wrong sa codes haha
+            return $this->serverError($th);
+        }
+    }
 }
