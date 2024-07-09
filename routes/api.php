@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+header('Access-Control-Allow-Origin:  *');
+
 Route::group([
 	'prefix' => 'users',
 	'as' => 'api.users.',
