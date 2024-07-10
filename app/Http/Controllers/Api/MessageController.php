@@ -119,9 +119,9 @@ class MessageController extends Controller
         // Transform user collection
         $messages->getCollection()->transform(function ($user) use ($request) {
             // Generate avatar URL
-            $avatar_url = $user->avatar ? asset($user->type === 'admin' ? 'avatars/admin/' . $user->avatar : 'avatars/' . $user->avatar) : null;
-            $avatar_url = Storage::disk('local')->url($avatar_url);
-
+            $avatar_url = $user->avatar ? $user->type === 'admin' ? 'avatars/admin/' . $user->avatar : 'avatars/' . $user->avatar : null;
+            $avatar_url = !is_null($avatar_url) ? Storage::disk('local')->url($avatar_url) : null;
+            
             // Get last message if exists
             $last_message = null;
             if ($user->getLastMessage() && in_array($request->user_from, [$user->getLastMessage()->user_from, $user->getLastMessage()->user_to])) {
