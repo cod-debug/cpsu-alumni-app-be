@@ -85,7 +85,7 @@ class AdminController extends Controller
             $users->getCollection()->transform(function ($item) {
                 $filePath = 'avatars/admin/' . $item['avatar']; // Assuming avatar path is relative to the storage directory
                 if (Storage::disk('local')->exists($filePath)) {
-                    $item['avatar_url'] = Storage::disk('local')->url(str_replace('/storage',env('STORAGE_PREFIX')."storage/",$filePath));
+                    $item['avatar_url'] = Storage::disk('local')->url($filePath);
                 } else {
                     // Provide a default avatar URL if the avatar doesn't exist
                     $item['avatar_url'] = asset('default_avatar_url.jpg'); // Assuming default_avatar_url.jpg is in your public directory
