@@ -39,9 +39,9 @@ class AlumniController extends Controller
             ->paginate($size);
 
             $users->getCollection()->transform(function ($item) {
-                $filePath = env('STORAGE_PREFIX').'avatars/' . $item['avatar']; // Assuming avatar path is relative to the storage directory
+                $filePath = 'avatars/' . $item['avatar']; // Assuming avatar path is relative to the storage directory
                 if (Storage::disk('local')->exists($filePath)) {
-                    $item['avatar_url'] = Storage::disk('local')->url($filePath);
+                    $item['avatar_url'] = Storage::disk('local')->url(env('STORAGE_PREFIX').$filePath);
                 } else {
                     // Provide a default avatar URL if the avatar doesn't exist
                     $item['avatar_url'] = asset('default_avatar_url.jpg'); // Assuming default_avatar_url.jpg is in your public directory
