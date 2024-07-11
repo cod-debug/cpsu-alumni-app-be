@@ -293,6 +293,20 @@ class AlumniController extends Controller
             // something went wrong server error
             return $this->serverError($th);
         }
+    }
 
+    public function countByGender(){
+        try {
+            return User::select('gender', \DB::raw('count(*) as count'))
+            ->where('type', '=', 'alumni')
+            ->where('status', '=', 'active')
+            ->groupBy('gender')
+            ->get();
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
     }
 }

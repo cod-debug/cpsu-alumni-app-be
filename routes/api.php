@@ -31,6 +31,7 @@ Route::group([
     Route::get('list','AlumniController@getPaginatedAlumni');
     Route::get('/one/{id}','AlumniController@getOne');
     Route::get('count-per-year','AlumniController@getCountPerYear');
+    Route::get('count-by-gender','AlumniController@countByGender');
 });
 
 Route::group([

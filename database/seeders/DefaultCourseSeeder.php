@@ -32,9 +32,7 @@ class DefaultCourseSeeder extends Seeder
         // loop all default courses
         foreach ($courses as $course) {
             // check if course name does not exist then save.
-            if(CourseModel::where('course_name', $course)->first() == null){
-                CourseModel::create(['course_name' => $course]);
-            }
+                CourseModel::firstOrCreate(['course_name' => $course]);
         }
     }
 }

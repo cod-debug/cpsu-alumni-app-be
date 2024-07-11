@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DefaultAdminSeeder::class,
             DefaultCourseSeeder::class,
+            DefaultNatureOfWorkSeeder::class,
         ]);
     }
 }
