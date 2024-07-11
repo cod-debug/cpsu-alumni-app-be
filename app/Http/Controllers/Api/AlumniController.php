@@ -309,4 +309,21 @@ class AlumniController extends Controller
             ], 500);
         }
     }
+
+    public function countByEmploymentStatus(){
+        try {
+            return User::select([
+                \DB::raw('COUNT(CASE WHEN work IS NOT NULL THEN 1 END) AS users_with_work'),
+                \DB::raw('COUNT(CASE WHEN work IS NULL THEN 1 END) AS users_without_work'),
+            ])
+            ->where('type', '=', 'alumni')
+            ->where('status', '=', 'active')
+            ->first();
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
 }
